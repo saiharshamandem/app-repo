@@ -33,7 +33,7 @@ pipeline {
         stage('Build Image') {
             steps {
                 script {
-                    sh "docker build -t ${env.ECR_REGISTRY}/${env.ECR_REPO}:${env.IMAGE_TAG} ."
+                    dockerImage = docker.build(env.ECR_REGISTRY + '/' + env.ECR_REPO + ':' + env.IMAGE_TAG)
                 }
             }
         }
@@ -43,7 +43,7 @@ pipeline {
                 script {
                     // Authenticate to ECR using IAM Role attached to EC2
                     sh 'aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}'
-                    sh "docker push ${env.ECR_REGISTRY}/${env.ECR_REPO}:${env.IMAGE_TAG}"
+                    dockerImage.push()
                 }
             }
         }
